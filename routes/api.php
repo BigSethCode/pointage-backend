@@ -5,8 +5,14 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\CollaborateurController;
 use App\Http\Controllers\RapportController;
+use App\Http\Controllers\PointageController;
 
 Route::post('/organisations', [OrganisationController::class, 'register']);
+
+Route::get('/pointage/{slug}', [PointageController::class, 'show']);
+Route::post('/pointage/{slug}', [PointageController::class, 'requestOtp']);
+Route::post('/pointage/{slug}/verify', [PointageController::class, 'verifyOtp']);
+Route::post('/pointage/{slug}/rapport', [PointageController::class, 'storeRapport']);
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 
