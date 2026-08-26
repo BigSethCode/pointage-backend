@@ -19,4 +19,6 @@ RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 EXPOSE 9000
 
-CMD ["sh", "-c", "php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && php-fpm"]
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+CMD ["docker-entrypoint.sh"]
