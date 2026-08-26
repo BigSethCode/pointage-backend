@@ -52,4 +52,38 @@ class RapportController extends Controller
             'missingMembers' => $missingMembers,
         ]);
     }
+
+    public function calendrier(Request $request): JsonResponse
+    {
+        $organisationId = $request->user()->organisation_id;
+        $mois = $request->query('mois', now()->format('Y-m'));
+
+        $start = $mois . '-01';
+        $end = \Carbon\Carbon::parse($start)->endOfMonth()->toDateString();
+
+        $activeCount = Collaborateur::where('organisation_id', $organisationId)
+            ->where('is_active', true)
+            ->count();
+
+        $pointages = Pointage::whereBetween('date', [$start, $end])
+            ->whereIn('collaborateur_id', function ($query) use ($organisationId) {
+                $query->select('id')
+                    ->from('collaborateurs')
+                    ->where('organisation_id', $organisationId)
+                    ->where('is_active', true);
+            })
+            ->selectRaw('date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date');
+
+        $days = [];
+        foreach ($pointages as $date => $count) {
+            $days[$date] = ['count' => (int) $count];
+        }
+
+        return response()->json([
+            'days' => $days,
+            'total' => $activeCount,
+        ]);
+    }
 }

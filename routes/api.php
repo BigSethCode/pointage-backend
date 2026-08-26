@@ -25,4 +25,5 @@ Route::middleware('auth')->group(function () {
     Route::patch('/collaborateurs/{id}', [CollaborateurController::class, 'update']);
 
     Route::get('/rapport/aujourdhui', [RapportController::class, 'aujourdhui']);
+    Route::get('/rapport/calendrier', [RapportController::class, 'calendrier']);
 });
