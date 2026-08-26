@@ -23,11 +23,11 @@ class PointageController extends Controller
 
         $collab = $this->verifiedCollaborateur($org);
 
-        $alreadyPointed = false;
+        $existingPointage = null;
         if ($collab) {
-            $alreadyPointed = Pointage::where('collaborateur_id', $collab->id)
+            $existingPointage = Pointage::where('collaborateur_id', $collab->id)
                 ->where('date', now()->toDateString())
-                ->exists();
+                ->first();
         }
 
         return response()->json([
@@ -36,7 +36,12 @@ class PointageController extends Controller
                 'nom' => $collab->nom,
                 'email' => $collab->email,
             ] : null,
-            'alreadyPointed' => $alreadyPointed,
+            'alreadyPointed' => $existingPointage ? true : false,
+            'existingPointage' => $existingPointage ? [
+                'heure' => $existingPointage->created_at->format('H:i'),
+                'contenu_fait' => $existingPointage->contenu_fait,
+                'blocage' => $existingPointage->blocage,
+            ] : null,
         ]);
     }
 
