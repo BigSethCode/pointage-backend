@@ -1,4 +1,4 @@
-FROM php:8.4-fpm
+FROM php:8.4-fpm AS php
 
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libpng-dev libonig-dev libxml2-dev \
@@ -17,7 +17,22 @@ RUN composer run-script post-autoload-dump --no-interaction
 
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
-EXPOSE 9000
+FROM php:8.4-fpm
+
+RUN apt-get update && apt-get install -y nginx \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY --from=php /usr/local/lib/php/ /usr/local/lib/php/
+COPY --from=php /app /app
+
+COPY nginx.conf /etc/nginx/sites-available/default
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log
+
+RUN mkdir -p /var/run/nginx && chown -R www-data:www-data /var/run/nginx
+RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
+
+EXPOSE 80
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh

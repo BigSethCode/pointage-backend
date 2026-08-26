@@ -14,4 +14,7 @@ echo "Caching views..."
 php artisan view:cache
 
 echo "Starting PHP-FPM..."
-exec php-fpm
+php-fpm --daemonize
+
+echo "Starting Nginx..."
+nginx -g 'daemon off;'
