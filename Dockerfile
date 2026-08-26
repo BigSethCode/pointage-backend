@@ -10,9 +10,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --optimize-autoloader
+RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts
 
 COPY . .
+RUN composer run-script post-autoload-dump --no-interaction
 
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
