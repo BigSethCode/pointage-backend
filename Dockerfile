@@ -23,7 +23,10 @@ RUN apt-get update && apt-get install -y nginx \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=php /usr/local/lib/php/ /usr/local/lib/php/
+COPY --from=php /usr/local/etc/php/ /usr/local/etc/php/
 COPY --from=php /app /app
+
+WORKDIR /app
 
 COPY nginx.conf /etc/nginx/sites-available/default
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \
