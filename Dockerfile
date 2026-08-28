@@ -19,7 +19,7 @@ RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
 FROM php:8.4-fpm
 
-RUN apt-get update && apt-get install -y nginx \
+RUN apt-get update && apt-get install -y nginx libpng16-16t64 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=php /usr/local/lib/php/ /usr/local/lib/php/
